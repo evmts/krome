@@ -74,6 +74,58 @@ Join our community to get help, share your projects, and contribute:
 
 - [Join Telegram](https://t.me/kromehq)
 
+## TODO
+
+### AI Slop
+- [ ] Go through this TODO list and fix it since as of now it's purely ai generated
+
+### Core Features
+- [x] Add helios support
+- [ ] Fix TypeScript/Svelte configuration and linting
+- [ ] Create proper blockchain app starter page
+- [ ] Add proper error handling and loading states for Helios
+- [ ] Implement wallet connection UI components
+- [ ] Add optimistic update helpers and hooks
+- [ ] Create blockchain transaction queue management
+- [ ] Add proper app state management
+
+### Security & Performance
+- [ ] Implement proper keychain integration for embedded wallets
+- [ ] Add request caching layer
+- [ ] Implement proper memory management for Helios
+- [ ] Add proper error boundaries and recovery
+- [ ] Create security audit checklist
+
+### Developer Experience
+- [ ] Add comprehensive TypeScript types for blockchain data
+- [ ] Create component library for common blockchain UI patterns
+- [ ] Add proper logging and debugging tools
+- [ ] Create example smart contract integration
+- [ ] Add automated testing setup
+- [ ] Create deployment scripts and documentation
+
+### Documentation
+- [ ] Create comprehensive API documentation
+- [ ] Add architecture diagrams
+- [ ] Create step-by-step tutorials
+- [ ] Document security best practices
+- [ ] Add performance optimization guide
+- [ ] Create troubleshooting guide
+
+### Mobile Support
+- [ ] Test and optimize iOS build
+- [ ] Test and optimize Android build
+- [ ] Add mobile-specific UI components
+- [ ] Implement mobile-specific security features
+- [ ] Add deep linking support
+
+### Nice to Have
+- [ ] Add block explorer integration
+- [ ] Create transaction simulation preview
+- [ ] Add ENS integration
+- [ ] Create example NFT viewing component
+- [ ] Add example DeFi integration patterns
+
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
