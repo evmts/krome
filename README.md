@@ -58,10 +58,10 @@ deno run -A npm:create-krome-app my-app
 cd my-app
 
 # Install dependencies
-deno task setup
+deno install
 
 # Start development
-deno task dev
+deno task tauri dev
 ```
 
 ## Documentation
