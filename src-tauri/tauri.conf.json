@@ -4,9 +4,9 @@
   "productName": "tauri-app",
   "version": "0.1.0",
   "build": {
-    "beforeDevCommand": "",
+    "beforeDevCommand": "pnpm run dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "",
+    "beforeBuildCommand": "pnpm run build",
     "frontendDist": "../dist"
   },
   "app": {
