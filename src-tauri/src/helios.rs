@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use once_cell::sync::Lazy;
 use tokio::runtime::Runtime;
 use serde_json::Value;
-use tauri::State;
+use tauri::{AppHandle, State};
 
 use helios::ethereum::EthereumClient;
 use helios::ethereum::database::FileDB;
@@ -26,25 +26,29 @@ pub struct HeliosState(pub Mutex<Option<EthereumClient<FileDB>>>);
 
 fn get_network(chain_id: u64) -> Result<Network, String> {
     match chain_id {
-        1 => Ok(Network::MAINNET),
-        11155111 => Ok(Network::SEPOLIA),
+        1 => Ok(Network::Mainnet),
         _ => Err(format!("Unsupported chain ID: {}", chain_id)),
     }
-}
-
-fn get_data_dir() -> PathBuf {
-    let app_dir = tauri::api::path::app_dir(&tauri::Config::default())
-        .expect("Failed to get app directory");
-    app_dir.join("helios")
 }
 
 #[tauri::command]
 pub async fn start_helios(
     state: State<'_, HeliosState>,
+    app_handle: AppHandle,
     rpc_url: String,
     consensus_rpc: Option<String>,
     chain_id: u64,
 ) -> Result<(), String> {
+    // Use a local helper function to get the data dir from app_handle
+    let data_dir = {
+        let maybe_path = app_handle
+            .path_resolver()
+            .app_data_dir(); // or app_dir(), app_config_dir(), etc.
+        maybe_path
+            .ok_or_else(|| "could not resolve the app data directory".to_string())?
+            .join("helios")
+    };
+
     let consensus_rpc = consensus_rpc.unwrap_or_else(|| "https://www.lightclientdata.org".to_string());
     
     let result: Result<EthereumClient<FileDB>, String> = RUNTIME.block_on(async {
@@ -54,7 +58,7 @@ pub async fn start_helios(
             .network(network)
             .execution_rpc(&rpc_url)
             .consensus_rpc(&consensus_rpc)
-            .data_dir(get_data_dir())
+            .data_dir(data_dir)
             .build()
             .map_err(|e| format!("Failed to build client: {:?}", e))?;
 

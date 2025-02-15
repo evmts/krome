@@ -5,8 +5,8 @@
   "version": "0.1.0",
   "build": {
     "beforeDevCommand": "pnpm run dev",
-    "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "pnpm run build",
+    "devUrl": "http://localhost:1420",
     "frontendDist": "../dist"
   },
   "app": {
@@ -18,11 +18,6 @@
         "title": "Tauri App",
         "width": 800
       }
-    ],
-    "security": {
-      "csp": null
-    }
-  },
-  "bundle": {},
-  "plugins": {}
+    ]
+  }
 }
