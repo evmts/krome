@@ -27,7 +27,6 @@ pub struct HeliosState(pub Mutex<Option<EthereumClient<FileDB>>>);
 fn get_network(chain_id: u64) -> Result<Network, String> {
     match chain_id {
         1 => Ok(Network::MAINNET),
-        5 => Ok(Network::GOERLI),
         11155111 => Ok(Network::SEPOLIA),
         _ => Err(format!("Unsupported chain ID: {}", chain_id)),
     }

@@ -9,7 +9,7 @@ Krome is a framework for building blockchain applications that compile to tiny, 
 - **[Tauri](https://tauri.app)** for secure native cross-platform applications
 - **[Svelte 5](https://svelte.dev)** for performant, intuitive UI development
 - **[TEVM](https://tevm.sh)** for Ethereum Virtual Machine integration
-- **[Deno](https://deno.land)** for secure JavaScript runtime
+- **[Deno (TODO)](https://deno.land)** for secure JavaScript runtime
 - **[Helios](https://github.com/a16z/helios)** (optional) for trustless light client capabilities
 
 What sets Krome apart is its uncompromising focus on both user experience and developer productivity. Through its opinionated framework, it delivers a polished, native feel for users while maximizing development speed and maintainability for developers.
