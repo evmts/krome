@@ -51,17 +51,10 @@ What sets Krome apart is its uncompromising focus on both user experience and de
 ## Quick Start
 
 ```bash
-# Create a new Krome project
-deno run -A npm:create-krome-app my-app
+pnpm install
 
-# Navigate to project
-cd my-app
-
-# Install dependencies
-deno install
-
-# Start development
-deno task tauri dev
+# FIXME: This doesn't work yet
+tauri dev
 ```
 
 ## Documentation
