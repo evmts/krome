@@ -39,6 +39,8 @@ What sets Krome apart is its uncompromising focus on both user experience and de
   - Secure key management using the system's native keychain
 - 🧪 **Testing Ready**: Comprehensive testing setup for all supported languages
 
+![image](https://github.com/user-attachments/assets/01666351-a2e6-4a09-879e-533a1f8ea06b)
+
 ## Requirements
 
 - [Deno](https://deno.land/manual/getting_started/installation) 1.41 or later
