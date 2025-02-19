@@ -20,7 +20,7 @@ export class RustBridge {
     return RustBridge.instance;
   }
 
-  async start(params: {rpcUrl: string, chainId: number, consensusRpc?: string}): Promise<void> {
+  async start(params: { rpcUrl: string, chainId: number, consensusRpc?: string }): Promise<void> {
     try {
       await invoke('start_helios', params);
     } catch (error) {
@@ -29,13 +29,32 @@ export class RustBridge {
     }
   }
 
-  async getLatestBlock(): Promise<Block> {
-    try {
-      const block = await invoke<Block>('get_latest_block');
-      return block;
-    } catch (error) {
-      console.error('Failed to get latest block:', error);
-      throw error;
+  /**
+   * Async generator that polls for the latest block.
+   * It waits for 1000ms between polls and yields a block whenever the block hash changes.
+   */
+  async *getLatestBlock(): AsyncGenerator<Block, void, unknown> {
+    let lastBlock: Block | null = null;
+    let failures = 0
+
+    while (true) {
+      try {
+        const block = await invoke<Block>('get_latest_block');
+
+        if (!lastBlock || block.hash !== lastBlock.hash) {
+          lastBlock = block;
+          yield block;
+        }
+        failures = 0
+      } catch (error) {
+        failures++
+        if (failures > 10) {
+          throw new Error("Failed to get block 10 times. Is helios started and healthy?")
+        }
+        console.error('Failed to get latest block:', error);
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
 } 
