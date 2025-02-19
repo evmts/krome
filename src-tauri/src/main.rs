@@ -5,12 +5,10 @@ mod helios;
 
 use std::sync::Mutex;
 use helios::HeliosState;
-use tauri_plugin_path_resolver;
 
 fn main() {
     tauri::Builder::default()
         .manage(HeliosState(Mutex::new(None)))
-        .plugin(tauri_plugin_path_resolver::init())
         .invoke_handler(tauri::generate_handler![
             helios::start_helios,
             helios::get_latest_block,
