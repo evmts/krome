@@ -57,10 +57,6 @@ pnpm install
 tauri dev
 ```
 
-## Documentation
-
-For detailed documentation and guides, visit our [Documentation Site](https://docs.krome.dev)
-
 ## Community
 
 Join our community to get help, share your projects, and contribute:
