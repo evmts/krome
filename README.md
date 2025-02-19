@@ -61,7 +61,7 @@ tauri dev
 
 Join our community to get help, share your projects, and contribute:
 
-- [Join Telegram](https://t.me/kromehq)
+- [Join Telegram](https://t.me/+ANThR9bHDLAwMjUx)
 
 ## TODO
 
