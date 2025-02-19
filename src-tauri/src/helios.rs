@@ -12,14 +12,6 @@ use helios::ethereum::{
     EthereumClientBuilder,
 };
 
-// Global Tokio runtime
-static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
-    tokio::runtime::Builder::new_multi_thread()
-        .enable_all()
-        .build()
-        .expect("Failed to create Tokio runtime")
-});
-
 // Global Helios client
 pub struct HeliosState(pub Mutex<Option<EthereumClient<FileDB>>>);
 
@@ -38,12 +30,10 @@ pub async fn start_helios(
     consensus_rpc: Option<String>,
     chain_id: u64,
 ) -> Result<(), String> {
-    // Use a local helper function to get the data dir from app_handle
     let data_dir = "./helios-data".to_string();
-
     let consensus_rpc = consensus_rpc.unwrap_or_else(|| "https://www.lightclientdata.org".to_string());
     
-    let result: Result<EthereumClient<FileDB>, String> = RUNTIME.block_on(async {
+    let result: Result<EthereumClient<FileDB>, String> = async {
         let network = get_network(chain_id)?;
         
         let mut client = EthereumClientBuilder::new()
@@ -58,7 +48,7 @@ pub async fn start_helios(
         client.start().await.map_err(|e| format!("Failed to start client: {:?}", e))?;
         client.wait_synced().await;
         Ok(client)
-    });
+    }.await;
 
     match result {
         Ok(client) => {
@@ -72,18 +62,24 @@ pub async fn start_helios(
 
 #[tauri::command]
 pub async fn get_latest_block(state: State<'_, HeliosState>) -> Result<Value, String> {
-    RUNTIME.block_on(async {
-        let guard = state.0.lock().unwrap();
-        if let Some(client) = guard.as_ref() {
-            let block = client
-                .get_block_by_number(BlockTag::Latest, false)
-                .await
-                .map_err(|e| format!("Failed to get block: {:?}", e))?;
-            
-            serde_json::to_value(block)
-                .map_err(|e| format!("Serialization error: {:?}", e))
-        } else {
-            Err("Client not started".to_string())
-        }
-    })
+    // Acquire the lock briefly and "take" the client out.
+    let client = {
+        let mut guard = state.0.lock().unwrap();
+        guard.take().ok_or_else(|| "Client not started".to_string())?
+    };
+
+    // Use the client without holding the lock.
+    let block = client
+        .get_block_by_number(BlockTag::Latest, false)
+        .await
+        .map_err(|e| format!("Failed to get block: {:?}", e))?;
+
+    // (Optionally) put the client back in the mutex if you want to reuse it.
+    {
+        let mut guard = state.0.lock().unwrap();
+        *guard = Some(client);
+    }
+
+    serde_json::to_value(block)
+        .map_err(|e| format!("Serialization error: {:?}", e))
 } 
