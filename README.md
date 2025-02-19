@@ -50,12 +50,30 @@ What sets Krome apart is its uncompromising focus on both user experience and de
 
 ## Quick Start
 
+Run app in dev mode
+
 ```bash
 pnpm install
 
-# FIXME: This doesn't work yet
 tauri dev
 ```
+
+See [tauri 2.0](https://v2.tauri.app/) docs for tauri specific information
+
+## File structore
+
+App logic
+
+- [src/](./src/) contains the source code for the svelte app 
+- Svelte uses file based routing in [src/routes](./src/routes/) folder
+- Context to help your llm write svelte is in [src/svelte.llm.txt](./src/svelte.llm.txt)
+- [src-tauri](./src-tauri) contains the rust code
+- Rust code is binded to svelte app in [src-tauri/lib.rs](./src-tauri/lib.rs)
+
+Tauri specific files
+
+- [src-tauri/](./src-tauri/tauri.conf.json) contains the [tauri config](https://v2.tauri.app/reference/config/)
+- Additional configuration is in the capabilities file [src-tauri/capabilities](./src-tauri/capabilities/)
 
 ## Community
 
