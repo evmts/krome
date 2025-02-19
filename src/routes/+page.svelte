@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { invoke } from "@tauri-apps/api/core";
+  import { RustBridge } from '../lib/rust-bridge.js'
 
   const state = $state({
     rpcUrl: "http://localhost:8545",
@@ -9,11 +9,13 @@
     latestBlock: ""
   });
 
+  const rustBridge = RustBridge.getInstance()
+
   async function onsubmit(event: Event) {
     event.preventDefault();
 
     try {
-      await invoke("start_helios", {
+      await rustBridge.start({
         rpcUrl: state.rpcUrl,
         consensusRpc: state.consensusRpc,
         chainId: state.chainId
@@ -25,7 +27,7 @@
     }
 
     try {
-      const block = await invoke("get_latest_block");
+      const block = await rustBridge.getLatestBlock();
       state.latestBlock = JSON.stringify(block, null, 2);
     } catch (e) {
       state.latestBlock = "Error fetching block: " + e;

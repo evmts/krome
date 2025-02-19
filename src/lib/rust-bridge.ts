@@ -1,33 +1,28 @@
 import { invoke } from "@tauri-apps/api/core";
 
-
+// TODO we want to make this typesafe and generated using specta-rs
 export interface Block {
   number: string;
   hash: string;
   parentHash: string;
   timestamp: string;
-  // Add other block fields as needed
 }
 
-export class HeliosClient {
-  private static instance: HeliosClient;
+export class RustBridge {
+  private static instance: RustBridge;
 
-  private constructor() {}
+  private constructor() { }
 
-  public static getInstance(): HeliosClient {
-    if (!HeliosClient.instance) {
-      HeliosClient.instance = new HeliosClient();
+  public static getInstance(): RustBridge {
+    if (!RustBridge.instance) {
+      RustBridge.instance = new RustBridge();
     }
-    return HeliosClient.instance;
+    return RustBridge.instance;
   }
 
-  async start(rpcUrl: string, chainId: number, consensusRpc?: string): Promise<void> {
+  async start(params: {rpcUrl: string, chainId: number, consensusRpc?: string}): Promise<void> {
     try {
-      await invoke('start_helios', {
-        rpcUrl,
-        consensusRpc,
-        chainId,
-      });
+      await invoke('start_helios', params);
     } catch (error) {
       console.error('Failed to start Helios:', error);
       throw error;
