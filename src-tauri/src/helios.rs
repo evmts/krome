@@ -1,6 +1,4 @@
 use std::sync::Mutex;
-use once_cell::sync::Lazy;
-use tokio::runtime::Runtime;
 use serde_json::Value;
 use tauri::{AppHandle, State};
 
@@ -12,7 +10,7 @@ use helios::ethereum::{
     EthereumClientBuilder,
 };
 
-// Global Helios client
+
 pub struct HeliosState(pub Mutex<Option<EthereumClient<FileDB>>>);
 
 fn get_network(chain_id: u64) -> Result<Network, String> {
@@ -44,7 +42,6 @@ pub async fn start_helios(
             .build()
             .map_err(|e| format!("Failed to build client: {:?}", e))?;
 
-        // Start the client and wait for sync
         client.start().await.map_err(|e| format!("Failed to start client: {:?}", e))?;
         client.wait_synced().await;
         Ok(client)
@@ -62,19 +59,16 @@ pub async fn start_helios(
 
 #[tauri::command]
 pub async fn get_latest_block(state: State<'_, HeliosState>) -> Result<Value, String> {
-    // Acquire the lock briefly and "take" the client out.
     let client = {
         let mut guard = state.0.lock().unwrap();
         guard.take().ok_or_else(|| "Client not started".to_string())?
     };
 
-    // Use the client without holding the lock.
     let block = client
         .get_block_by_number(BlockTag::Latest, false)
         .await
         .map_err(|e| format!("Failed to get block: {:?}", e))?;
 
-    // (Optionally) put the client back in the mutex if you want to reuse it.
     {
         let mut guard = state.0.lock().unwrap();
         *guard = Some(client);
