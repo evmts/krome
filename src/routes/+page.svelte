@@ -2,9 +2,25 @@
   import { onDestroy } from 'svelte';
   import { RustBridge } from '../lib/rust-bridge.js'
   import BlockTable from '../components/BlockTable.svelte';
+  import ReactWrapper from '../react/ReactWrapper.svelte';
+  import { RainbowKitButton } from '../react/RainbowKitWrapper';
+  import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+  import { QueryClient } from "@tanstack/react-query";
+  import { mainnet, optimism, base } from 'wagmi/chains';
+  import { createElement } from 'react';
 
-  const state = $state({
-    rpcUrl: "http://localhost:8545",
+  // Initialize wagmi config and query client
+  const wagmiConfig = $state(getDefaultConfig({
+    appName: 'Krome',
+    projectId: '898f836c53a18d0661340823973f0cb4',
+    chains: [mainnet, optimism, base],
+    ssr: true
+  }));
+
+  const queryClient = $state(new QueryClient());
+
+  const appState = $state({
+    rpcUrl: "https://rpc.ankr.com/eth",
     consensusRpc: "https://www.lightclientdata.org",
     chainId: 1,
     statusMsg: "",
@@ -24,30 +40,30 @@
       blockIterator = null;
     }
 
-    state.loading = true;
-    state.statusMsg = "";
+    appState.loading = true;
+    appState.statusMsg = "";
 
     try {
       await rustBridge.start({
-        rpcUrl: state.rpcUrl,
-        consensusRpc: state.consensusRpc,
-        chainId: state.chainId
+        rpcUrl: appState.rpcUrl,
+        consensusRpc: appState.consensusRpc,
+        chainId: appState.chainId
       });
-      state.statusMsg = "Helios started successfully.";
+      appState.statusMsg = "Helios started successfully.";
     } catch (e) {
-      state.statusMsg = "Error starting Helios: " + e;
-      state.loading = false;
+      appState.statusMsg = "Error starting Helios: " + e;
+      appState.loading = false;
       return;
     }
 
-    state.loading = false;
+    appState.loading = false;
 
     blockIterator = rustBridge.getLatestBlock();
 
     (async () => {
       try {
         for await (const block of blockIterator!) {
-          state.latestBlock = JSON.stringify(block, null, 2);
+          appState.latestBlock = JSON.stringify(block, null, 2);
         }
       } catch (e) {
         console.error("Polling terminated:", e);
@@ -65,30 +81,37 @@
 <main class="container">
   <h1>Helios with Svelte Runes</h1>
 
+  <ReactWrapper 
+    element={createElement(RainbowKitButton, {
+      config: wagmiConfig,
+      queryClient: queryClient
+    })} 
+  />
+
   <form {onsubmit}>
     <div>
       <label for="rpcUrl">RPC URL:</label>
-      <input id="rpcUrl" type="text" placeholder="Enter RPC URL..." bind:value={state.rpcUrl} />
+      <input id="rpcUrl" type="text" placeholder="Enter RPC URL..." bind:value={appState.rpcUrl} />
     </div>
     <div>
       <label for="consensusRpc">Consensus RPC:</label>
-      <input id="consensusRpc" type="text" placeholder="Enter Consensus RPC..." bind:value={state.consensusRpc} />
+      <input id="consensusRpc" type="text" placeholder="Enter Consensus RPC..." bind:value={appState.consensusRpc} />
     </div>
     <div>
       <label for="chainId">Chain ID:</label>
-      <input id="chainId" type="number" placeholder="Enter Chain ID..." bind:value={state.chainId} />
+      <input id="chainId" type="number" placeholder="Enter Chain ID..." bind:value={appState.chainId} />
     </div>
-    <button type="submit" disabled={state.loading}>
-      {state.loading ? "Starting Helios..." : "Start Helios and Get Latest Block"}
+    <button type="submit" disabled={appState.loading}>
+      {appState.loading ? "Starting Helios..." : "Start Helios and Get Latest Block"}
     </button>
   </form>
 
-  {#if state.loading}
+  {#if appState.loading}
     <p>Loading Helios, please wait...</p>
   {/if}
 
-  <p>{state.statusMsg}</p>
-  <BlockTable block={state.latestBlock ? JSON.parse(state.latestBlock) : {}} />
+  <p>{appState.statusMsg}</p>
+  <BlockTable block={appState.latestBlock ? JSON.parse(appState.latestBlock) : {}} />
 </main>
 
 <style>
