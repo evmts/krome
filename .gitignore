@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 .tevm
+.vscode
 /build
 /.svelte-kit
 /package
