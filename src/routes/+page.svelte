@@ -1,23 +1,16 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
-  import { RustBridge } from '../lib/rust-bridge.js'
-  import BlockTable from '../components/BlockTable.svelte';
-  import ReactWrapper from '../react/ReactWrapper.svelte';
-  import { RainbowKitButton } from '../react/RainbowKitWrapper';
-  import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-  import { QueryClient } from "@tanstack/react-query";
-  import { mainnet, optimism, base } from 'wagmi/chains';
-  import { createElement } from 'react';
+  import { getContext, onDestroy } from "svelte";
+  import { RustBridge } from "../lib/rust-bridge.js";
+  import BlockTable from "../components/BlockTable.svelte";
+  import ReactWrapper from "../react/ReactWrapper.svelte";
+  import { RainbowKitButton } from "../react/RainbowKitWrapper";
+  import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+  import { mainnet, optimism, base } from "wagmi/chains";
+  import { createElement } from "react";
+  import { useQueryClient, type QueryClient } from "@tanstack/svelte-query";
+    import { http } from "viem";
 
-  // Initialize wagmi config and query client
-  const wagmiConfig = $state(getDefaultConfig({
-    appName: 'Krome',
-    projectId: '898f836c53a18d0661340823973f0cb4',
-    chains: [mainnet, optimism, base],
-    ssr: true
-  }));
-
-  const queryClient = $state(new QueryClient());
+  const queryClient = useQueryClient()
 
   const appState = $state({
     rpcUrl: "https://rpc.ankr.com/eth",
@@ -25,10 +18,23 @@
     chainId: 1,
     statusMsg: "",
     latestBlock: "",
-    loading: false
+    loading: false,
   });
 
-  const rustBridge = RustBridge.getInstance()
+  const wagmiConfig = $state(
+    getDefaultConfig({
+      appName: "Krome",
+      projectId: "898f836c53a18d0661340823973f0cb4",
+      chains: [mainnet, optimism, base],
+      ssr: false,
+      appDescription: "A svelte/tauri based framework",
+      transports: {
+        [mainnet.id]: http(appState.rpcUrl),
+      }
+    }),
+  );
+
+  const rustBridge = RustBridge.getInstance();
 
   let blockIterator: AsyncGenerator<any, void, unknown> | null = null;
 
@@ -47,7 +53,7 @@
       await rustBridge.start({
         rpcUrl: appState.rpcUrl,
         consensusRpc: appState.consensusRpc,
-        chainId: appState.chainId
+        chainId: appState.chainId,
       });
       appState.statusMsg = "Helios started successfully.";
     } catch (e) {
@@ -81,28 +87,47 @@
 <main class="container">
   <h1>Helios with Svelte Runes</h1>
 
-  <ReactWrapper 
-    element={createElement(RainbowKitButton, {
-      config: wagmiConfig,
-      queryClient: queryClient
-    })} 
-  />
+  <div class="rainbow-wrapper">
+    <ReactWrapper
+      element={createElement(RainbowKitButton, {
+        config: wagmiConfig,
+        queryClient: queryClient,
+      })}
+    />
+  </div>
 
   <form {onsubmit}>
     <div>
       <label for="rpcUrl">RPC URL:</label>
-      <input id="rpcUrl" type="text" placeholder="Enter RPC URL..." bind:value={appState.rpcUrl} />
+      <input
+        id="rpcUrl"
+        type="text"
+        placeholder="Enter RPC URL..."
+        bind:value={appState.rpcUrl}
+      />
     </div>
     <div>
       <label for="consensusRpc">Consensus RPC:</label>
-      <input id="consensusRpc" type="text" placeholder="Enter Consensus RPC..." bind:value={appState.consensusRpc} />
+      <input
+        id="consensusRpc"
+        type="text"
+        placeholder="Enter Consensus RPC..."
+        bind:value={appState.consensusRpc}
+      />
     </div>
     <div>
       <label for="chainId">Chain ID:</label>
-      <input id="chainId" type="number" placeholder="Enter Chain ID..." bind:value={appState.chainId} />
+      <input
+        id="chainId"
+        type="number"
+        placeholder="Enter Chain ID..."
+        bind:value={appState.chainId}
+      />
     </div>
     <button type="submit" disabled={appState.loading}>
-      {appState.loading ? "Starting Helios..." : "Start Helios and Get Latest Block"}
+      {appState.loading
+        ? "Starting Helios..."
+        : "Start Helios and Get Latest Block"}
     </button>
   </form>
 
@@ -111,7 +136,9 @@
   {/if}
 
   <p>{appState.statusMsg}</p>
-  <BlockTable block={appState.latestBlock ? JSON.parse(appState.latestBlock) : {}} />
+  <BlockTable
+    block={appState.latestBlock ? JSON.parse(appState.latestBlock) : {}}
+  />
 </main>
 
 <style>
@@ -122,6 +149,13 @@
     flex-direction: column;
     justify-content: center;
     text-align: center;
+    align-items: center;
+  }
+  .rainbow-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
   }
   form > div {
     margin-bottom: 10px;

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
+    import { onDestroy } from 'svelte';
     import { createRoot, type Root } from 'react-dom/client';
     import type { ReactElement } from 'react';
   
