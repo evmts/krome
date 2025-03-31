@@ -4,17 +4,17 @@
   "version": "0.1.0",
   "identifier": "com.krome-app.app",
   "build": {
-    "beforeDevCommand": "pnpm dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "pnpm build",
-    "frontendDist": "../build"
+    "beforeDevCommand": "cd app && npm i && npm run dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "cd app && npm i && npm run build",
+    "frontendDist": "./app/dist"
   },
   "app": {
     "windows": [
       {
-        "title": "tauri-app",
-        "width": 800,
-        "height": 600
+        "title": "ESPLR",
+        "width": 1200,
+        "height": 800
       }
     ],
     "security": {
