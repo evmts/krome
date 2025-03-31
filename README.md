@@ -18,22 +18,22 @@ What sets Krome apart is its uncompromising focus on both user experience and de
 
 - 🖥️ **True Native Performance**: Build once, run anywhere with [Tauri](https://tauri.app)'s native capabilities
 - 🔗 **Blockchain-Ready**: Pre-configured with [TEVM](https://tevm.sh) for seamless blockchain integration
-- 🔄 **Multi-Language Support**: 
+- 🔄 **Multi-Language Support**:
   - [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)/[TypeScript](https://www.typescriptlang.org)
   - [Golang](https://go.dev)
   - [Rust](https://www.rust-lang.org)
   - [Solidity](https://soliditylang.org)
-- 🎨 **Performant UI**: 
+- 🎨 **Performant UI**:
   - Faster than React-based alternatives
   - Intuitive for blockchain and systems developers
   - Simple, declarative syntax
 - 📱 **Mobile First**: First-class mobile support out of the box
-- 🔒 **Security First**: 
+- 🔒 **Security First**:
   - [Deno](https://deno.land)'s secure-by-default runtime
   - [Tauri](https://tauri.app/v1/guides/security/security)'s security-focused architecture
   - Audited dependencies and minimal attack surface
 - ⚡ **Optimistic Updates**: Built-in support for snappy UIs with optimistic operations
-- 👛 **Wallet Integration**: 
+- 👛 **Wallet Integration**:
   - Simple, secure wallet connection with broad provider support
   - Built-in embedded wallet support for seamless onboarding
   - Secure key management using the system's native keychain
@@ -62,11 +62,11 @@ tauri dev
 
 See [tauri 2.0](https://v2.tauri.app/) docs for tauri specific information
 
-## File structore
+## File structure
 
 App logic
 
-- [src/](./src/) contains the source code for the svelte app 
+- [src/](./src/) contains the source code for the svelte app
 - Svelte uses file based routing in [src/routes](./src/routes/) folder
 - Context to help your llm write svelte is in [src/svelte.llm.txt](./src/svelte.llm.txt)
 - [src-tauri](./src-tauri) contains the rust code
