@@ -5,3 +5,9 @@ allowBuilds:
   bufferutil: false
   keccak: false
   utf-8-validate: false
+
+# Published tevm (<= 1.0.0-next.149) imports the `ekta` chain from viem/chains,
+# which viem 2.46.1 removed. Tevm main already depends on viem ^2.58.4; drop
+# this override once a tevm release with that change is published.
+overrides:
+  viem: 2.46.0

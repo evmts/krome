@@ -44,3 +44,12 @@ This section maps the attack surface so a reviewer can start in the right place.
 
 - `pnpm-workspace.yaml` allows install scripts only for `esbuild`.
 - Run `pnpm audit` and `cargo audit` (in `src-tauri/`) before releases.
+- `viem` is pinned to 2.46.0 through a pnpm override: published tevm
+  (<= 1.0.0-next.149) imports a chain viem 2.46.1 removed. Remove the override
+  once a tevm release built from current tevm `main` is published.
+- As of 2026-11-24, `pnpm audit` reports 2 critical and 19 high advisories, down
+  from 4 critical and 48 high. The criticals are `tinypool`, reached through
+  `vitest`, which published `@tevm/memory-client` lists as a runtime
+  dependency (fixed on tevm `main`, not yet released). Test-runner code is not
+  part of the app bundle. The SvelteKit advisories cover server features
+  (remote functions, form actions) that a static Tauri SPA does not run.

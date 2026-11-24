@@ -113,8 +113,4 @@ jobs:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v31
       - name: Dev shell provides node, pnpm, cargo, forge
-        run: nix develop --command bash -c 'node --version && pnpm --version && forge --version && anvil --version'
-      - uses: actions/upload-artifact@v4
-        with:
-          name: flake-lock
-          path: flake.lock
+        run: nix develop --no-write-lock-file --command bash -c 'node --version && pnpm --version && forge --version && anvil --version'
