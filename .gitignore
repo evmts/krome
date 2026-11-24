@@ -11,3 +11,12 @@ src-tauri/helios-data
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Foundry
+/out
+/cache
+/broadcast
+
+# Playwright
+/test-results
+/playwright-report

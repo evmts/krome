@@ -31,7 +31,7 @@ contract BankV1 {
     /// @param recipent The receiver of ether
     function withdrawEther(address account, uint256 password, uint256 amount, address recipent) external {
         require(activatedAccounts[account], "Account is not activated yet");
-        require(accountsPasswords[account] == password, "Account is not activated yet");
+        require(accountsPasswords[account] == password, "Invalid password");
         require(accountsBalances[account] >= amount, "Amount to withdraw exceeds balance");
 
         accountsBalances[account] -= amount;

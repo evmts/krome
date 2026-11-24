@@ -1,0 +1,17 @@
+[profile.default]
+src = "contracts"
+test = "contracts/test"
+script = "contracts/script"
+out = "out"
+cache_path = "cache"
+libs = []
+solc_version = "0.8.28"
+
+[fuzz]
+runs = 1000
+
+[profile.ci.fuzz]
+runs = 5000
+
+[fmt]
+line_length = 120

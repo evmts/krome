@@ -8,7 +8,8 @@ import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 const config = {
   preprocess: vitePreprocess(),
   kit: {
-    adapter: adapter(),
+    // Serve index.html for every route; SvelteKit routes on the client.
+    adapter: adapter({ fallback: "index.html" }),
   },
 };
 

@@ -1,13 +1,12 @@
 [package]
 name = "krome"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "Krome: native blockchain apps with Tauri, Svelte, Tevm and Helios"
+authors = ["evmts"]
 license = "MIT"
 repository = "https://github.com/evmts/krome"
 default-run = "krome"
 edition = "2021"
-rust-version = "1.60"
 build = "build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

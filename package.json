@@ -1,14 +1,23 @@
 {
   "name": "krome",
   "version": "0.1.0",
-  "description": "",
+  "description": "Native blockchain apps with Tauri, Svelte 5, Tevm and Helios",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "pnpm check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "bench": "vitest bench --run",
+    "test:e2e": "playwright test",
+    "test:e2e:contracts": "vitest run -c vitest.e2e.config.ts",
+    "contracts:build": "forge build",
+    "contracts:test": "forge test",
+    "contracts:deploy": "KROME_DEPLOY=1 vite-node -c vitest.config.ts contracts/deploy.ts",
     "tauri": "tauri"
   },
   "license": "MIT",
@@ -27,15 +36,22 @@
     "wagmi": "^2.14.11"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@sveltejs/adapter-static": "^3.0.8",
     "@sveltejs/kit": "^2.17.2",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tauri-apps/cli": "^2.2.7",
     "@tevm/ts-plugin": "1.0.0-next.124",
+    "fast-check": "^4.11.0",
     "svelte": "^5.20.1",
     "svelte-check": "^4.1.4",
     "typescript": "~5.7.3",
     "vite": "^6.1.0",
+    "vite-node": "3.0.6",
     "vitest": "^3.0.6"
+  },
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=22.13"
   }
 }

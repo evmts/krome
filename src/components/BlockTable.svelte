@@ -1,8 +1,10 @@
 <script lang="ts">
-  export let block: any;
+  import { classifyValue, columnsOf, formatPrimitive } from "../lib/block-format.js";
+
+  let { block }: { block: Record<string, unknown> } = $props();
 </script>
 
-<table class="block-table">
+<table class="block-table" data-testid="block-table">
   <thead>
     <tr>
       <th>Field</th>
@@ -10,46 +12,46 @@
     </tr>
   </thead>
   <tbody>
-    {#each Object.entries(block) as [key, value]}
+    {#each Object.entries(block) as [key, value] (key)}
+      {@const kind = classifyValue(value)}
       <tr>
         <td class="key">{key}</td>
         <td class="value">
-          {#if Array.isArray(value)}
-            {#if value.length === 0}
-              <em>Empty Array</em>
-            {:else if typeof value[0] === 'object'}
-              <!-- Nested Table for an Array of Objects (e.g. withdrawals) -->
-              <table class="nested-table">
-                <thead>
+          {#if kind === "empty-array"}
+            <em>Empty Array</em>
+          {:else if kind === "object-array"}
+            {@const rows = value as Record<string, unknown>[]}
+            {@const columns = columnsOf(rows)}
+            <!-- Nested table for an array of objects (e.g. withdrawals) -->
+            <table class="nested-table">
+              <thead>
+                <tr>
+                  {#each columns as column}
+                    <th>{column}</th>
+                  {/each}
+                </tr>
+              </thead>
+              <tbody>
+                {#each rows as row}
                   <tr>
-                    {#each Object.keys(value[0]) as nestedKey}
-                      <th>{nestedKey}</th>
+                    {#each columns as column}
+                      <td>{formatPrimitive(row[column])}</td>
                     {/each}
                   </tr>
-                </thead>
-                <tbody>
-                  {#each value as item}
-                    <tr>
-                      {#each Object.values(item) as cell}
-                        <td>{cell}</td>
-                      {/each}
-                    </tr>
-                  {/each}
-                </tbody>
-              </table>
-            {:else}
-              <!-- List for an Array of Primitives (e.g. transactions) -->
-              <ul class="array-list">
-                {#each value as item}
-                  <li>{item}</li>
                 {/each}
-              </ul>
-            {/if}
-          {:else if typeof value === 'object' && value !== null}
-            <!-- Handle any nested object -->
+              </tbody>
+            </table>
+          {:else if kind === "primitive-array"}
+            <!-- List for an array of primitives (e.g. transaction hashes) -->
+            <ul class="array-list">
+              {#each value as unknown[] as item}
+                <li>{formatPrimitive(item)}</li>
+              {/each}
+            </ul>
+          {:else if kind === "object"}
             <pre>{JSON.stringify(value, null, 2)}</pre>
           {:else}
-            {value}
+            {formatPrimitive(value)}
           {/if}
         </td>
       </tr>

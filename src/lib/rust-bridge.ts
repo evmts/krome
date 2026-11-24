@@ -1,60 +1,39 @@
 import { invoke } from "@tauri-apps/api/core";
+import { pollLatestBlock, type Block } from "./block-poller.js";
+import type { HeliosParams } from "./helios-config.js";
 
-// TODO we want to make this typesafe and generated using specta-rs
-export interface Block {
-  number: string;
-  hash: string;
-  parentHash: string;
-  timestamp: string;
-}
+export type { Block } from "./block-poller.js";
 
+type Invoke = <T>(command: string, args?: Record<string, unknown>) => Promise<T>;
+
+/**
+ * Typed wrapper around the Tauri commands in src-tauri/src/helios.rs.
+ * TODO: generate these bindings with tauri-specta (issue #4).
+ */
 export class RustBridge {
-  private static instance: RustBridge;
+  private static instance: RustBridge | undefined;
 
-  private constructor() { }
+  constructor(private readonly invokeCommand: Invoke = invoke) {}
 
   public static getInstance(): RustBridge {
-    if (!RustBridge.instance) {
-      RustBridge.instance = new RustBridge();
-    }
+    RustBridge.instance ??= new RustBridge();
     return RustBridge.instance;
   }
 
-  async start(params: { rpcUrl: string, chainId: number, consensusRpc?: string }): Promise<void> {
-    try {
-      await invoke('start_helios', params);
-    } catch (error) {
-      console.error('Failed to start Helios:', error);
-      throw error;
-    }
+  /** Starts Helios and resolves once it has synced. */
+  async start(params: HeliosParams): Promise<void> {
+    await this.invokeCommand<void>("start_helios", { ...params });
   }
 
-  /**
-   * Async generator that polls for the latest block.
-   * It waits for 1000ms between polls and yields a block whenever the block hash changes.
-   */
-  async *getLatestBlock(): AsyncGenerator<Block, void, unknown> {
-    let lastBlock: Block | null = null;
-    let failures = 0
-
-    while (true) {
-      try {
-        const block = await invoke<Block>('get_latest_block');
-
-        if (!lastBlock || block.hash !== lastBlock.hash) {
-          lastBlock = block;
-          yield block;
-        }
-        failures = 0
-      } catch (error) {
-        failures++
-        if (failures > 10) {
-          throw new Error("Failed to get block 10 times. Is helios started and healthy?")
-        }
-        console.error('Failed to get latest block:', error);
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
+  /** Fetches the latest block once. Rejects if Helios is not started. */
+  getBlock(): Promise<Block> {
+    return this.invokeCommand<Block>("get_latest_block");
   }
-} 
+
+  /** Yields the latest block every time the head hash changes. */
+  getLatestBlock(
+    options: { intervalMs?: number; sleep?: (ms: number) => Promise<void> } = {},
+  ): AsyncGenerator<Block, void, unknown> {
+    return pollLatestBlock({ fetchBlock: () => this.getBlock(), ...options });
+  }
+}

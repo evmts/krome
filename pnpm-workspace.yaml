@@ -1,0 +1,7 @@
+# Build-script policy for pnpm >= 10. esbuild needs its postinstall to fetch
+# the native binary; the others ship JS fallbacks and are not needed.
+allowBuilds:
+  esbuild: true
+  bufferutil: false
+  keccak: false
+  utf-8-validate: false
